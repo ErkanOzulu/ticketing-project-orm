@@ -29,7 +29,7 @@ public class RoleServiceImpl implements RoleService {
        //Role entity coming from DB
         //But controller ask roleDTO to use for view
 
-        //convert entity to dto- Mapper add pom.xml modelmapper
+        //convert entity to dto- Mapper add into pom.xml modelmapper
         //get roles from db and convert each role to roleDto
 
        // roleList.stream().map(obj->roleMapper.convertToDTO(obj)); same with below
