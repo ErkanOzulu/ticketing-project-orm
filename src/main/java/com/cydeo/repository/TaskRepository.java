@@ -9,14 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface TaskRepository extends JpaRepository<Task,Long> {
+public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    @Query("SELECT COUNT(t) from Task t WHERE t.project.projectCode=?1 and t.taskStatus<>'Complete'")
+    @Query("SELECT COUNT(t) from Task t WHERE t.project.projectCode=?1 and t.taskStatus<>'COMPLETE'")
     int totalNonCompletedTask(String projectCode);
 
 
-@Query(value = "select count(*) from tasks t join projects p on t.project_id=p.id where  p.project_code=1? and t.task_status='Complete'",nativeQuery = true)
-int totalCompletedTask(String projectCode);
+    @Query(value = "select count(*) from tasks t join projects p on t.project_id=p.id where  p.project_code=?1 and t.task_status='COMPLETE'", nativeQuery = true)
+    int totalCompletedTask(String projectCode);
 
     List<Task> findAllByProject(Project project);
 

@@ -169,7 +169,7 @@
                                                        class="btn btn-warning rounded-0"
                                                        th:href="@{/task/update/{id}(id=${task.getId()})}">Update
                                                     </a>
-                                                    <a th:if="${ project.projectStatus.value == 'Completed'}"
+                                                    <a th:if="${ task.taskStatus.value == 'Completed'}"
                                                        class="btn btn-warning rounded-0 disabled-button">Update
                                                     </a>
                                                     <a th:href="@{/task/delete/{id}(id=${task.getId()})}"
