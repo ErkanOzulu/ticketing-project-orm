@@ -11,6 +11,7 @@ import com.cydeo.service.TaskService;
 import com.cydeo.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,13 +25,15 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final ProjectService projectService;
     private final TaskService taskService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, TaskService taskService) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, TaskService taskService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.projectService = projectService;
         this.taskService = taskService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -47,7 +50,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(UserDTO dto) {
-        userRepository.save(userMapper.convertToUser(dto));
+        dto.setEnabled(true);
+        User obj = userMapper.convertToUser(dto);
+        obj.setPassWord(passwordEncoder.encode(obj.getPassWord()));
+        userRepository.save(obj);
     }
 
     @Override
@@ -80,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
         if (checkIfUserCanBeDeleted(user)) {
             user.setIsDeleted(true);
-            user.setUserName(user.getUserName()+""+user.getId());
+            user.setUserName(user.getUserName() + "" + user.getId());
             userRepository.save(user);
         }
 
@@ -92,12 +98,12 @@ public class UserServiceImpl implements UserService {
             case "Manager":
                 List<ProjectDTO> projectDTOList = projectService.readAllByAssignedManager(user);
 
-                return projectDTOList.size()==0;
+                return projectDTOList.size() == 0;
 
             case "Employee":
                 List<TaskDTO> taskDTOList = taskService.readAllByAssignedEmployee(user);
 
-                return taskDTOList.size()==0;
+                return taskDTOList.size() == 0;
             default:
                 return true;
 
