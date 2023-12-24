@@ -11,7 +11,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     User findByUserName(String username);
 
 
-    @Transactional
+    @Transactional//we need to use if we want to delete
     void deleteByUserName(String username);
 
     List<User>findAllByRoleDescriptionIgnoreCase(String description);
