@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -26,14 +27,14 @@ public class ProjectController {
         this.projectService = projectService;
 
     }
-
+    @RolesAllowed({"Admin","Manager"})
     @GetMapping()
     public ResponseEntity<ResponseWrapper> getProjects() {
         List<ProjectDTO> projectDTOs = projectService.listAllProjects();
         return ResponseEntity.ok(new ResponseWrapper("All projects are Successfully retrieved", projectDTOs, HttpStatus.OK));
 
     }
-
+    @RolesAllowed("Manager")
     @GetMapping("/{projectCode}")
     public ResponseEntity<ResponseWrapper> getProjectByCode(@PathVariable("projectCode") String projectCode) {
 
@@ -42,7 +43,7 @@ public class ProjectController {
         return ResponseEntity.ok(new ResponseWrapper("Project is successfully retrieved", projectDTO, HttpStatus.OK));
 
     }
-
+    @RolesAllowed("Manager")
     @PostMapping()
     public ResponseEntity<ResponseWrapper> createProject(@RequestBody ProjectDTO projectDto) {
 
@@ -50,7 +51,7 @@ public class ProjectController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseWrapper("Project is successfully created", HttpStatus.CREATED));
     }
-
+    @RolesAllowed("Manager")
     @PutMapping("/update")
     public ResponseEntity<ResponseWrapper> updateProject(@RequestBody ProjectDTO projectDto) {
 
@@ -61,14 +62,14 @@ public class ProjectController {
 
     }
 
-
+    @RolesAllowed("Manager")
     @DeleteMapping("/{projectCode}")
     public ResponseEntity<ResponseWrapper> deleteProject(@PathVariable("projectCode") String projectcode) {
         projectService.delete(projectcode);
         return ResponseEntity.ok(new ResponseWrapper("Project is succesfully deleted", HttpStatus.OK));
     }
 
-
+    @RolesAllowed("Manager")
     @GetMapping("/manager/project-status")
     public ResponseEntity<ResponseWrapper> getProjectByManager() {
 
@@ -77,7 +78,7 @@ public class ProjectController {
 
         return ResponseEntity.ok(new ResponseWrapper("Projects are successfully retrieved", HttpStatus.OK));
     }
-
+    @RolesAllowed("Manager")
     @PutMapping("/manager/complete/{projectCode}")
     public ResponseEntity<ResponseWrapper> managerCompleteProject(@PathVariable("projectCode") String projectCode) {
         projectService.complete(projectCode);
