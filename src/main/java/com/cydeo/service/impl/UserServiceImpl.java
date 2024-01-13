@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(UserDTO dto) {
+        dto.setEnabled(true);
         userRepository.save(userMapper.convertToUser(dto));
     }
 
