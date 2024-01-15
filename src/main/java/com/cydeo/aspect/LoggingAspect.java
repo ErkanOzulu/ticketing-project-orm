@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configuration
 @Aspect
-@Slf4j
+@Slf4j //abstraction of other logging framework help us to reach  log4j2, logback framework
 public class LoggingAspect {
 
 //    Logger log = LoggerFactory.getLogger(LoggingAspect.class);
