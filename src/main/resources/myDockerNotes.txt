@@ -15,8 +15,8 @@
 
 * we need container to achive runable app
 -- docker container run cydeo/firstdocker
--- docker container ls   --> shows which container is running
--- docker container ls -a    --> it shows all container which is also not running
+-- docker container ls / docker ps  --> shows which container is running
+-- docker container ls -a / docker ps -a   --> it shows all container which is also not running
 
 -- docker container rm  ---> to delete container with ıd 
 -- docker container rm 007f353f0d33
@@ -59,7 +59,8 @@ WORKDIR --> change director from root to jar file path(/usr/app/)
 ENTRYPOINT--> it use for run and syntax for java project ["java","-jar","jarFileName.jar"]
 3- open terminal 
 	* go directory of project --> PS C:\Users\Data\IdeaProjects\spring-framework>cd Spring-24-Docker 
-	* docker image build -t yourDockerHubName/imageName .  --> docker image build -t qareport/erk_firstdocker . 
+	* docker image build -t yourDockerHubName/imageName .  --> docker image build -t qareport/erk_firstdocker .
+	* . means wherever you are, please build in that place
 	* to see created image -->> docker image ls
 	qareport/erkfirstdocker   latest    57ae1b28c419   40 minutes ago   489MB
 
@@ -79,11 +80,12 @@ CONTAINER ID   IMAGE                     COMMAND                  CREATED       
 
 
 ****DOCKER COMPOSE ****
-
+*docker-compose.yaml is a YAML fie defining services(apps, microcervices), networks, and volumes for a docker application
+* We can spin everything up or tear it all down.
 4- Image has only readOnly properties, ıf you want to add something, you must containerize, container have writeable layer.
-		- we use Volumes--> put your persistent data in volumes and you can connect this wolumes with all containers.Volumes are inside of the images but sperated from fileSystem.Volumes hold dynamic datas or spec. like db.Image holds static files such as programs.
-- to store persistent data in a different layer(volumes)
-5- Docker networks are used to comminicate between Docker containers and outside the world.(docker compose)
+		- we use Volumes--> put your persistent data in volumes and you can connect this wolumes with all containers.Volumes are inside of the docker but sperated from fileSystem.Volumes hold dynamic datas or spec. like db.Image holds static files such as programs.
+- to store persistent data and logs in a different layer(volumes)
+5- Docker networks are used to comminicate between Docker containers on the same host or different hosts and outside the world(internet).(docker compose)
 	*Docker includes three network(bridge, host, none), and each is provided by a different driver.We use bridge.
 	- docker network ls
 
@@ -126,13 +128,14 @@ networks:      --> declare comminication line
 volumes:      --> this is storage for persistent data and when you remove containers it doesn't remove with them.
   initdb:	-- name of volume declared by me
 
-
--docker compose up -d
-
+*to run all containers in compose yaml:
+- docker compose up -d
+*to delete all container in the compose yaml
+- docker compose down
 -docker logs containerNameOrContainerId 
 
 - docker volume prune ---> remove all volumes
-- docker .... prune  -->>rremove all images, container vs..
+- docker container prune  -->>remove all containers which is not running
 
 
 
