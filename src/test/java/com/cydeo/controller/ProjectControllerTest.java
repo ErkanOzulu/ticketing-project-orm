@@ -97,6 +97,11 @@ class ProjectControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].projectCode").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].assignedManager.userName").isNotEmpty());
 
+        /**
+         *jayway jsonpath
+         */
+
+
     }
 
 
@@ -148,7 +153,7 @@ class ProjectControllerTest {
         map.add("grant_type", "password");
         map.add("client_id", "ticketing-app");
         map.add("client_secret", "T54IaKGRkacq1x3z5dffxwGHgcBKe3St");
-        map.add("username", "ozzy");
+        map.add("username", "mike");
         map.add("password", "abc1");
         map.add("scope", "openid");
 
