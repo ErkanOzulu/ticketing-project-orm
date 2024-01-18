@@ -1,0 +1,159 @@
+-Docker purpose
+* memory use, memory managment, to easyly get runable app
+* with docker you will be able to run app any where any machine
+* you can use GitBash for Windows  and also IntelliJ terminal
+* Docker desktop for storing local images
+* DockerHub is a repo for images,
+- we need container to achive runable app
+* ctrl+z or ctrl+c  terminate by container
+* docker image app template -- > whatever it needs to run all in docker image(appCode, dependdencies, version, )
+-- docker image --help --> to see commands
+-- docker image pull cydeo/firstdocker  --> it is pull from dockerHub
+-- docker image ls  --> list of images
+
+? How to containerize your image?
+
+* we need container to achive runable app
+-- docker container run cydeo/firstdocker
+-- docker container ls   --> shows which container is running
+-- docker container ls -a    --> it shows all container which is also not running
+
+-- docker container rm  ---> to delete container with ıd 
+-- docker container rm 007f353f0d33
+
+
+* every app isolated in the container so if you want to reach any app from container you have to open to local host
+
+-- docker container run -p hostPortNumber:containerPortNumber imageNameOrImageId --> it defines container port to reach from local, first 8080 means host port, second means container port 
+* containarze your image
+-- docker container run -p 8080:8080 cydeo/firstdocker
+-- docker container run -p 8080:8080  7b484a3b2696
+
+**if you don't want to see logs   
+-- docker container run -p 8080:8080 -d 7b484a3b2696
+Or
+-- docker container run -d -p 8080:8080 7b484a3b2696
+-d means detach
+* to give a specific name to container --> docker container run --name front-end -d -p 8080:8080 qareport/erkfirstdocker
+* docker container stop ContainerIdOrName
+* docker container start 622
+* running container can not be rm -- >  docker container rm 622
+but if you force with f it will be able to remove --->docker container rm -f 622
+
+****************************************CREATE APP IMAGE FROM IntelliJ**********************************if
+
+1- Add a file in project level and named Dockerfile. it must be same because syntax must be match.
+2- Write like belows according to app to prepare Dockerfile
+##Baseimage /it has to be in any dockerfile
+FROM openjdk:17-jdk
+#will get jar file to your project and copy to image
+COPY ./target/Spring-24-Docker-0.0.1-SNAPSHOT.jar /usr/app/
+#to direct any folder workdir same with cd command
+WORKDIR /usr/app
+#will provide exacutable application when container starts to run
+ENTRYPOINT ["java","-jar","Spring-24-Docker-0.0.1-SNAPSHOT.jar"]
+---
+From --> imageName from dockerHub
+Copy --> path of your project jar file and stored path in docker(/usr/app/)
+WORKDIR --> change director from root to jar file path(/usr/app/)
+ENTRYPOINT--> it use for run and syntax for java project ["java","-jar","jarFileName.jar"]
+3- open terminal 
+	* go directory of project --> PS C:\Users\Data\IdeaProjects\spring-framework>cd Spring-24-Docker 
+	* docker image build -t yourDockerHubName/imageName .  --> docker image build -t qareport/erk_firstdocker . 
+	* to see created image -->> docker image ls
+	qareport/erkfirstdocker   latest    57ae1b28c419   40 minutes ago   489MB
+
+	* to run yourdocker image -->>  docker container run -p 8080:8080 -d qareport/erkfirst
+	* to give a specific name to container --> docker container run --name front-end -d -p 8080:8080 qareport/erkfirstdocker
+		-docker container ls
+CONTAINER ID   IMAGE                     COMMAND                  CREATED          STATUS          PORTS                    NAMES
+6058f686f9e1   qareport/erkfirstdocker   "java -jar Spring-24…"   53 seconds ago   Up 52 seconds   0.0.0.0:8080->8080/tcp   front-end
+
+
+	* to push your image inside the dockerHub registry --> docker image push qareport/erkfirstdocker
+	* to remove from local  first remove container than image 
+		- docker container rm -f ContainerIdOrName
+		- docker image rm imageNameOrImageId
+	* if you don't have image in your local it will pull from dockerHub install to your local automatically when you run container with imageName
+--docker container run --name front-end -d -p 8080:8080 qareport/erkfirstdocker
+
+
+****DOCKER COMPOSE ****
+
+4- Image has only readOnly properties, ıf you want to add something, you must containerize, container have writeable layer.
+		- we use Volumes--> put your persistent data in volumes and you can connect this wolumes with all containers.Volumes are inside of the images but sperated from fileSystem.Volumes hold dynamic datas or spec. like db.Image holds static files such as programs.
+- to store persistent data in a different layer(volumes)
+5- Docker networks are used to comminicate between Docker containers and outside the world.(docker compose)
+	*Docker includes three network(bridge, host, none), and each is provided by a different driver.We use bridge.
+	- docker network ls
+
+5- Add docker-compose.yaml in your project(ticketing-orm-security branch)
+	- version: 3.7 --> write the newest version (docker compose version
+	-services:     -->write networks (https://docs.docker.com/compose/compose-file/compose-file-v3/)
+
+#version:
+#services:
+#networks:
+#volumes:
+version: "3.8"  --> must be latest version check from web /compose-file version
+services:       -->declare your microservices 
+  myDb:		--> for ex.I added my db and named myDb as a service	
+    image: postgres  --> take from dockerHub.it  is image name
+    container_name: myDb
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "ticketing-app"
+      POSTGRES_PASSWORD: "1234"
+    ports:
+      - "5435:5432"      --> change local host number if it is already used.
+    restart: always	 --> means it is up and running always
+    volumes:
+      - initdb:/var/lib/postgresql/data   -->  /var/lib/postgresql/data this is path where postgres data stored 
+    networks:
+      - webnet    --> use this line to comminicate
+  ticketing-app:
+    build: .
+    container_name: ticketingapp
+    ports:
+      - "8080:8080"
+    networks:
+      - webnet
+    depends_on:
+      - myDb
+networks:      --> declare comminication line
+  webnet:	--> this is a line named by me and network type of bridge 
+    driver: bridge
+volumes:      --> this is storage for persistent data and when you remove containers it doesn't remove with them.
+  initdb:	-- name of volume declared by me
+
+
+-docker compose up -d
+
+-docker logs containerNameOrContainerId 
+
+- docker volume prune ---> remove all volumes
+- docker .... prune  -->>rremove all images, container vs..
+
+
+
+****Docker Files ****
+to copy all project from intelliJ and run as a maven
+--------------------------------------
+FROM amd64/maven:3.8.6-openjdk-11
+WORKDIR usr/app
+COPY . .
+ENTRYPOINT ["mvn","spring-boot:run"]
+--------------------------------------
+
+to copy project jar file and run with java
+--------------------------------------
+##Baseimage /it has to be in any dockerfile
+FROM openjdk:17-jdk
+#will get jar file and copy to image
+COPY ./target/Spring-24-Docker-0.0.1-SNAPSHOT.jar /usr/app/
+#to direct any folder
+WORKDIR /usr/app
+#will provide exacutable application when container starts to run
+ENTRYPOINT ["java","-jar","Spring-24-Docker-0.0.1-SNAPSHOT.jar"]
+------------------------------------------------
+
