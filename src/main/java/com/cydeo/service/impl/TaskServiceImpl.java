@@ -128,7 +128,7 @@ public class TaskServiceImpl implements TaskService {
         SimpleKeycloakAccount details= (SimpleKeycloakAccount) authentication.getDetails();
         String username=details.getKeycloakSecurityContext().getToken().getPreferredUsername();
 
-        User loggedInUser =userRepository.findByUserName(username);
+        User loggedInUser =userRepository.findByUserNameAndIsDeleted(username,false);
 //        User loggedInUser =userRepository.findByUserName("john@employee.com");
 
         List<Task>list=taskRepository.findAllByTaskStatusIsNotAndAssignedEmployee(status,loggedInUser);
@@ -155,7 +155,7 @@ public class TaskServiceImpl implements TaskService {
         SimpleKeycloakAccount details= (SimpleKeycloakAccount) authentication.getDetails();
         String username=details.getKeycloakSecurityContext().getToken().getPreferredUsername();
 
-        User loggedInUser =userRepository.findByUserName(username);
+        User loggedInUser =userRepository.findByUserNameAndIsDeleted(username,false);
 //        User loggedInUser =userRepository.findByUserName("john@employee.com");
 
         List<Task>list=taskRepository.findAllByTaskStatusAndAssignedEmployee(status,loggedInUser);
