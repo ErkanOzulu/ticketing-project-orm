@@ -13,6 +13,7 @@ import com.cydeo.service.TaskService;
 import com.cydeo.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,14 +29,16 @@ public class UserServiceImpl implements UserService {
     private final ProjectService projectService;
     private final TaskService taskService;
     private final KeycloakService keycloakService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, TaskService taskService, KeycloakService keycloakService) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, TaskService taskService, KeycloakService keycloakService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.projectService = projectService;
         this.taskService = taskService;
         this.keycloakService = keycloakService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -54,7 +57,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO save(UserDTO dto) {
         dto.setEnabled(true);
-        User savedUser=userRepository.save(userMapper.convertToUser(dto));
+
+        String encodedPassword = passwordEncoder.encode(dto.getPassWord());
+
+        User obj = userMapper.convertToUser(dto);
+        obj.setPassWord(encodedPassword);
+
+        User savedUser=userRepository.save(obj);
+
         keycloakService.userCreate(dto);
 
         return userMapper.convertToDto(savedUser);
